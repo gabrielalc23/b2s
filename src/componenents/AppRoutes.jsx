@@ -16,7 +16,7 @@ import { Canvas } from "../pages/Canvas";
 import { Estrategia } from "../pages/Estrategia";
 import CadastroDiretrizesEmpresa from "../pages/Diretrizes";
 import Forcas from "../pages/Forcas";
-import { Informacoes } from "../pages/Informacoes";
+import { Informacoes } from "../pages/Informacoes.jsx";
 import AnaliseSWOT from "../pages/Swot";
 import MetasPlanosAcao from "../pages/Acoes";
 import MetasEmpresa from "../pages/Metas";
