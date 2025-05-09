@@ -1,0 +1,15 @@
+{
+    "name": "gabrielcampos/luz-planilhas",
+    "autoload": {
+        "psr-4": {
+            "Gabrielcampos\\LuzPlanilhas\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "gabrielalc23",
+            "email": "gabriellopes.campos23@gmail.com"
+        }
+    ],
+    "require": {}
+}

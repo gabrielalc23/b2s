@@ -1,0 +1,40 @@
+.modern-input {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+  }
+  
+  .modern-input:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+  }
+  
+  .modern-table {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .modern-table th {
+    border-top: none;
+  }
+  
+  .modern-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .card {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .btn-success {
+    background-color: #4e73df;
+    border-color: #4e73df;
+  }
+  .bg-oil {
+    background-color: #2c3e50;
+  }
+  .btn-success:hover {
+    background-color: #3a5bbf;
+    border-color: #3a5bbf;
+  }
