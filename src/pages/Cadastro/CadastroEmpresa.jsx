@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
 import { TextField, InputAdornment } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -30,13 +30,26 @@ const CadastroEmpresa = () => {
     mes_inicial_negocios: '',
     usuario_id: 1
   };
-
+  const [menuOpen, setMenuOpen] = useState();
   const [empresa, setEmpresa] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dados-basicos');
   const [cadastroRealizado, setCadastroRealizado] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Atualiza o estado se a tela for redimensionada
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      // Fecha o menu ao aumentar a tela para desktop
+      if (window.innerWidth >= 768 && menuOpen) setMenuOpen(false);
+    };
+    
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const formatCNPJ = (value) => {
     if (!value) return '';
@@ -113,7 +126,7 @@ const CadastroEmpresa = () => {
         throw new Error(errorData.message || "Erro no servidor");
       }
 
-      const resultado = await response.json();
+      //const resultado = await response.json();
       setSuccess(true);
       setCadastroRealizado(true);
       
@@ -179,9 +192,9 @@ const CadastroEmpresa = () => {
   };
 
   return (
-    <Container className="mt-4" style={{ maxWidth: '960px' }}>
+    <Container className="mt-3 mt-md-4 px-3 px-md-4" style={{ maxWidth: '960px' }}>
       <Row className="justify-content-center">
-        <Col lg={12}>
+        <Col xs={12} lg={12}>
           <Card className="border-0" style={{ 
             boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
             borderRadius: '12px',
@@ -191,27 +204,28 @@ const CadastroEmpresa = () => {
             <Card.Header style={{ 
               backgroundColor: colors.light,
               borderBottom: `1px solid ${colors.border}`,
-              padding: '1.25rem 1.5rem'
+              padding: '1rem 1.25rem'
             }}>
               <div className="d-flex align-items-center">
                 <BusinessIcon style={{ color: colors.primary, marginRight: '12px' }} fontSize="medium" />
-                <h5 style={{ color: colors.text, margin: 0, fontWeight: 600, fontSize: '1.25rem' }}>
+                <h5 style={{ color: colors.text, margin: 0, fontWeight: 600, fontSize: isMobile ? '1.1rem' : '1.25rem' }}>
                   {cadastroRealizado ? 'Empresa Cadastrada' : 'Cadastro de Empresa'}
                 </h5>
               </div>
             </Card.Header>
             
-            <Card.Body style={{ backgroundColor: colors.light, padding: '1.5rem' }}>
+            <Card.Body style={{ backgroundColor: colors.light, padding: isMobile ? '1rem' : '1.5rem' }}>
               {success && (
                 <Alert variant="success" style={{
                   backgroundColor: colors.success,
                   color: colors.light,
                   border: 'none',
-                  padding: '0.75rem 1.25rem',
-                  marginBottom: '1.5rem',
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1.25rem',
                   borderRadius: '8px',
                   display: 'flex',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  fontSize: isMobile ? '0.9rem' : '1rem'
                 }}>
                   <svg style={{ marginRight: '8px' }} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="white"/>
@@ -221,7 +235,17 @@ const CadastroEmpresa = () => {
               )}
 
               {!cadastroRealizado && (
-                <div className="mb-4" style={{ display: 'flex', gap: '8px', borderBottom: `1px solid ${colors.border}`, paddingBottom: '1rem' }}>
+                <div className="mb-3 mb-md-4" style={{ 
+                  display: 'flex', 
+                  gap: isMobile ? '4px' : '8px', 
+                  borderBottom: `1px solid ${colors.border}`, 
+                  paddingBottom: '0.75rem',
+                  overflowX: isMobile ? 'auto' : 'visible',
+                  whiteSpace: 'nowrap',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': { display: 'none' }
+                }}>
                   {['dados-basicos', 'contato', 'detalhes'].map((tab) => (
                     <Button 
                       key={tab}
@@ -231,11 +255,13 @@ const CadastroEmpresa = () => {
                         backgroundColor: 'transparent',
                         border: 'none',
                         borderRadius: '6px',
-                        padding: '0.5rem 1rem',
+                        padding: isMobile ? '0.4rem 0.8rem' : '0.5rem 1rem',
                         fontWeight: 500,
                         textDecoration: 'none',
                         position: 'relative',
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease',
+                        fontSize: isMobile ? '0.85rem' : '0.95rem',
+                        minWidth: isMobile ? 'auto' : '100px'
                       }}
                       onClick={() => setActiveTab(tab)}
                     >
@@ -245,7 +271,7 @@ const CadastroEmpresa = () => {
                       {activeTab === tab && (
                         <div style={{
                           position: 'absolute',
-                          bottom: '-1.1rem',
+                          bottom: isMobile ? '-0.75rem' : '-1.1rem',
                           left: 0,
                           right: 0,
                           height: '2px',
@@ -261,7 +287,7 @@ const CadastroEmpresa = () => {
               <Form onSubmit={activeTab === 'detalhes' ? handleSubmit : handleNext}>
                 {activeTab === 'dados-basicos' && (
                   <Row>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Nome da Empresa *"
@@ -285,9 +311,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Razão Social"
@@ -309,9 +336,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="CNPJ *"
@@ -335,9 +363,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Formato Jurídico"
@@ -346,6 +375,7 @@ const CadastroEmpresa = () => {
                         onChange={handleChange}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
                   </Row>
@@ -353,7 +383,7 @@ const CadastroEmpresa = () => {
 
                 {activeTab === 'contato' && (
                   <Row>
-                    <Col md={8}>
+                    <Col xs={12} md={8}>
                       <TextField
                         fullWidth
                         label="Endereço"
@@ -375,9 +405,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={4}>
+                    <Col xs={12} md={4}>
                       <TextField
                         fullWidth
                         label="Complemento"
@@ -386,9 +417,10 @@ const CadastroEmpresa = () => {
                         onChange={handleChange}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Cidade/Estado"
@@ -397,9 +429,10 @@ const CadastroEmpresa = () => {
                         onChange={handleChange}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Telefone"
@@ -421,9 +454,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={12}>
+                    <Col xs={12}>
                       <TextField
                         fullWidth
                         label="Email"
@@ -446,6 +480,7 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
                   </Row>
@@ -453,7 +488,7 @@ const CadastroEmpresa = () => {
 
                 {activeTab === 'detalhes' && (
                   <Row>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="CNAE"
@@ -462,9 +497,10 @@ const CadastroEmpresa = () => {
                         onChange={handleChange}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Alíquota de Imposto"
@@ -486,9 +522,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Ano Inicial de Negócios"
@@ -511,11 +548,17 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <Form.Group controlId="mesInicialNegocios">
-                        <Form.Label style={{ color: colors.textLight, fontSize: '0.875rem' }}>
+                        <Form.Label style={{ 
+                          color: colors.textLight, 
+                          fontSize: isMobile ? '0.8rem' : '0.875rem',
+                          marginBottom: '0.5rem',
+                          display: 'block'
+                        }}>
                           Mês Inicial
                         </Form.Label>
                         <Form.Select
@@ -526,7 +569,8 @@ const CadastroEmpresa = () => {
                             backgroundColor: colors.light,
                             border: `1px solid ${colors.border}`,
                             borderRadius: '8px',
-                            height: '40px'
+                            height: isMobile ? '36px' : '40px',
+                            fontSize: isMobile ? '0.9rem' : '1rem'
                           }}
                           disabled={cadastroRealizado}
                         >
@@ -537,7 +581,7 @@ const CadastroEmpresa = () => {
                         </Form.Select>
                       </Form.Group>
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <TextField
                         fullWidth
                         label="Data de Fundação"
@@ -561,9 +605,10 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
-                    <Col md={12}>
+                    <Col xs={12}>
                       <TextField
                         fullWidth
                         label="Observações"
@@ -587,12 +632,13 @@ const CadastroEmpresa = () => {
                         }}
                         style={{ marginBottom: '1rem' }}
                         disabled={cadastroRealizado}
+                        size={isMobile ? 'small' : 'medium'}
                       />
                     </Col>
                   </Row>
                 )}
 
-                <div className="d-flex justify-content-between mt-4">
+                <div className="d-flex justify-content-between mt-3 mt-md-4">
                   {!cadastroRealizado && activeTab !== 'dados-basicos' && (
                     <Button 
                       onClick={handleBack}
@@ -600,8 +646,9 @@ const CadastroEmpresa = () => {
                         backgroundColor: colors.secondary,
                         border: 'none',
                         borderRadius: '8px',
-                        padding: '0.625rem 1.5rem',
-                        fontWeight: 500
+                        padding: isMobile ? '0.5rem 1rem' : '0.625rem 1.5rem',
+                        fontWeight: 500,
+                        fontSize: isMobile ? '0.9rem' : '1rem'
                       }}
                     >
                       Voltar
@@ -617,9 +664,10 @@ const CadastroEmpresa = () => {
                           backgroundColor: colors.primary,
                           border: 'none',
                           borderRadius: '8px',
-                          padding: '0.625rem 1.5rem',
+                          padding: isMobile ? '0.5rem 1rem' : '0.625rem 1.5rem',
                           fontWeight: 500,
-                          opacity: loading ? 0.7 : 1
+                          opacity: loading ? 0.7 : 1,
+                          fontSize: isMobile ? '0.9rem' : '1rem'
                         }}
                       >
                         {activeTab === 'detalhes' 
@@ -633,8 +681,9 @@ const CadastroEmpresa = () => {
                           backgroundColor: colors.secondary,
                           border: 'none',
                           borderRadius: '8px',
-                          padding: '0.625rem 1.5rem',
-                          fontWeight: 500
+                          padding: isMobile ? '0.5rem 1rem' : '0.625rem 1.5rem',
+                          fontWeight: 500,
+                          fontSize: isMobile ? '0.9rem' : '1rem'
                         }}
                       >
                         Cadastrar Nova Empresa
